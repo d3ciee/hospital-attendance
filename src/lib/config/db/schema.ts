@@ -1,8 +1,12 @@
-import UserSession, { userSessionRelations } from "../../models/user/user-session";
+import UserSession from "../../models/user/user-session";
 import User from "../../models/user/user";
+import Hospital from "$lib/models/hospital/hospital";
+import HospitalEmployee, { hospitalEmployeeRelations } from "$lib/models/hospital/hospital-employee";
 
 export {
     User,
     UserSession,
-    userSessionRelations
+    HospitalEmployee,
+    hospitalEmployeeRelations,
+    Hospital
 }
