@@ -4,6 +4,7 @@ import initAuth from ".";
 
 const useAuth: Handle = async ({ event, resolve }) => {
 	const auth = initAuth(event.locals.db);
+	event.locals.auth = auth;
 
 	const sessionId = event.cookies.get(auth.sessionCookieName);
 

@@ -4,11 +4,12 @@ import HospitalEmployee from '$lib/models/hospital/hospital-employee';
 import User from '$lib/models/user/user';
 import { DrizzleError } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, redirect, type Actions } from '@sveltejs/kit';
 import bcrypt from 'bcryptjs';
 import { v4 as uuid } from "uuid";
 
 import { z } from "zod";
+import HospitalDepartment from '$lib/models/hospital/hospital-department';
 
 
 const validationSchema = z.object({
@@ -20,9 +21,29 @@ const validationSchema = z.object({
     username: z.string({ required_error: "A username is required." }).min(3, { message: "Username must be at least 3 characters long." }).max(64, { message: "Username must be at most 64 characters long." }),
 })
 
+
 export const load = (async (e) => {
-    //TODO: Redirect to /hospital/<h_id>/dashboard if user is already logged in
-    return {};
+
+    const userId = e.locals.user?.id;
+    const hospital = await e.locals.db.query.HospitalEmployee.findFirst({
+        columns: {
+            role: true
+        },
+        with: {
+            hospital: {
+                columns: {
+                    registrationId: true
+                }
+            }
+        },
+        where: ({ userId }, { eq }) => eq(userId, userId)
+    })
+
+    console.log("hospital", hospital)
+
+    if (userId && hospital) {
+        throw redirect(302, `/hospital/${hospital.hospital.registrationId}`);
+    }
 }) satisfies PageServerLoad;
 
 
@@ -38,22 +59,35 @@ export const actions: Actions = {
         }
 
         const passwordHash = bcrypt.hashSync(body.data.password, 10);
+
         const userId = uuid();
+        const adminDepartmentId = uuid();
 
         try {
-            e.locals.db.batch([
+            await e.locals.db.batch([
                 e.locals.db.insert(Hospital).values({
                     address: body.data.address,
                     name: body.data.name,
-                    registrationID: body.data.registrationId
+                    registrationId: body.data.registrationId
                 }),
                 e.locals.db.insert(User).values({
                     id: userId,
                     passwordHash,
                     username: body.data.username,
                 }),
+                e.locals.db.insert(HospitalDepartment).values({
+                    uuid: adminDepartmentId,
+                    checkInAt: "00:00",
+                    checkOutAt: "00:00",
+                    description: "Administrative department",
+                    hospitalId: body.data.registrationId,
+                    id: "DP-ADMIN-1",
+                    name: "Admin Department"
+                }),
                 e.locals.db.insert(HospitalEmployee).values({
                     id: userId,
+                    hospitalDepartmentUId: adminDepartmentId,
+                    uuid: uuid(),
                     role: "admin",
                     hospitalId: body.data.registrationId,
                     userId,
@@ -61,13 +95,35 @@ export const actions: Actions = {
                 })
             ])
         }
-        catch (e) {
+        catch (e: any) {
+            if (e.message.includes("UNIQUE constraint failed: hospital.registration_id"))
+                return fail(400, {
+                    errors: [{ message: "A hospital with this registration ID already exists." }]
+                })
+
+            if (e.message.includes("UNIQUE constraint failed: user.username"))
+                return fail(400, {
+                    errors: [{ message: "A user with this username already exists." }]
+                })
+
+            if (e.message.includes("UNIQUE constraint failed: hospital_employee.email"))
+                return fail(400, {
+                    errors: [{ message: "A user with this email already exists." }]
+                })
+
             console.log(e);
             return fail(500, {
                 errors: [{ message: "An error occurred while registering the hospital." }]
             })
         }
 
+        const session = await e.locals.auth.createSession(userId, {});
+        const sessionCookie = e.locals.auth.createSessionCookie(session.id);
+        e.cookies.set(sessionCookie.name, sessionCookie.value, {
+            path: ".",
+            ...sessionCookie.attributes
+        });
 
+        throw redirect(302, `/hospital/${body.data.registrationId}/dashboard`)
     }
 }

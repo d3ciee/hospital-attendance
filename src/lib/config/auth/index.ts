@@ -21,7 +21,12 @@ const initAuth = (db: DB) => {
     })
 }
 
+type Auth = ReturnType<typeof initAuth>;
+
 export default initAuth;
+export {
+    type Auth
+}
 
 declare module "lucia" {
     interface Register {

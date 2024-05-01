@@ -38,6 +38,9 @@ importers:
       formsnap:
         specifier: ^1.0.0
         version: 1.0.0(svelte@4.2.15)(sveltekit-superforms@2.12.6(@sveltejs/kit@2.5.7(@sveltejs/vite-plugin-svelte@3.1.0(svelte@4.2.15)(vite@5.2.10(@types/node@20.12.7)))(svelte@4.2.15)(vite@5.2.10(@types/node@20.12.7)))(@types/json-schema@7.0.15)(esbuild-runner@2.2.2(esbuild@0.19.12))(esbuild@0.19.12)(svelte@4.2.15))
+      html5-qrcode:
+        specifier: ^2.3.8
+        version: 2.3.8
       lucide-svelte:
         specifier: ^0.376.1
         version: 0.376.1(svelte@4.2.15)
@@ -1797,6 +1800,9 @@ packages:
   hono@4.2.9:
     resolution: {integrity: sha512-59FAv52UxDWUt/NlC0NzrRCjeVCThUnVlqlrKYm+k80XujBu6uJwBIa5gACKKZWobjA0MJ6Vds0I3URKf383Cw==}
     engines: {node: '>=16.0.0'}
+
+  html5-qrcode@2.3.8:
+    resolution: {integrity: sha512-jsr4vafJhwoLVEDW3n1KvPnCCXWaQfRng0/EEYk1vNcQGcG/htAdhJX0be8YyqMoSz7+hZvOZSTAepsabiuhiQ==}
 
   ignore@5.3.1:
     resolution: {integrity: sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==}
@@ -4241,6 +4247,8 @@ snapshots:
   heap@0.2.7: {}
 
   hono@4.2.9: {}
+
+  html5-qrcode@2.3.8: {}
 
   ignore@5.3.1: {}
 

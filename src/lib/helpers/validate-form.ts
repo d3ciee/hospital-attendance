@@ -22,7 +22,6 @@ const validateForm = <T extends ZodRawShape>(form: FormData, zodSchema: ZodObjec
             data: formValues.data
         };
     } else {
-        console.log(formValues.error.errors[0].path);
         return {
             valid: false,
             errors: formValues.error.errors.map((error) => ({
