@@ -2,7 +2,7 @@
 	import * as Table from '$lib/ui/table';
 	import * as Card from '$lib/ui/card';
 	import { Button } from '$lib/ui/button';
-	import { Trash2, PlusIcon, Loader2 } from 'lucide-svelte';
+	import { Trash2, PlusIcon, Loader2, Info } from 'lucide-svelte';
 	import * as Dialog from '$lib/ui/dialog';
 	import { Input } from '$lib/ui/input';
 	import { Label } from '$lib/ui/label';
@@ -10,6 +10,7 @@
 	import { Textarea } from '$lib/ui/textarea';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import { Description } from 'formsnap';
 
 	export let data: PageData;
 	let loading: boolean = false;
@@ -43,8 +44,14 @@
 
 <main class="w-full p-4">
 	<Card.Root class="w-full">
-		<Card.Header class="flex w-full flex-row items-center justify-between">
-			<Card.Title>Departments</Card.Title>
+		<Card.Header class="flex w-full flex-row items-start justify-between">
+			<div class="flex flex-col gap-2 pr-10">
+				<Card.Title>Departments</Card.Title>
+				<Card.Description class="flex">
+					NB: Special departments including DP-ADMIN-x and DP-HR-x give users extra permissions
+				</Card.Description>
+			</div>
+
 			<Dialog.Root bind:open={isAddDepartmentModalOpen}>
 				<Dialog.Trigger let:builder>
 					<Button {...builder}>

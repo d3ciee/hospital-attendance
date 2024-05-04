@@ -8,6 +8,11 @@ export const load = (async (e) => {
     const dashboardView = e.url.pathname.split("/")[3];
     const employee = await e.locals.db.query.HospitalEmployee.findFirst({
         with: {
+            department: {
+                columns: {
+                    id: true,
+                }
+            },
             user: {
                 columns: {
                     username: true
@@ -26,7 +31,7 @@ export const load = (async (e) => {
 
     if (employee.hospitalId !== hospital.registrationId) return error(403, "You are not authorized to view this page.");
 
-    const availableViews = dashboardViews.get(employee.role)!;
+    const availableViews = employee.department.id.includes("DP-HR") ? [{ name: "Leave Requests", path: "leave-requests" }, ...dashboardViews.get(employee.role)!] : dashboardViews.get(employee.role)!;
     if (!availableViews.find(v => v.path === dashboardView) && dashboardView) return error(404, "You are not authorized to view this page.");
 
 

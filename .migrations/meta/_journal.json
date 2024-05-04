@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1714744032379,
+      "tag": "0000_eager_goblin_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1714746721936,
+      "tag": "0001_crazy_reavers",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1714757870883,
+      "tag": "0002_nappy_tombstone",
+      "breakpoints": true
+    }
+  ]
+}
