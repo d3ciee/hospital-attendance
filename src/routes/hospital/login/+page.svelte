@@ -72,7 +72,7 @@
 			{error}
 		</Label>
 		<div class="pt-6">
-			<Button class="w-full" type="submit">
+			<Button disabled={loading} class="w-full" type="submit">
 				{#if loading}
 					<Loader2 class="mr-2 h-4 w-4" />
 				{/if}

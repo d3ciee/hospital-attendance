@@ -38,8 +38,6 @@ export const load = (async (e) => {
     if (userId && hospital) {
         throw redirect(302, `/hospital/${hospital.hospital.registrationId}`);
     }
-    //TODO: Redirect to /hospital/<h_id>/dashboard if user is already logged in
-    return {};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
@@ -99,6 +97,8 @@ export const actions: Actions = {
             })
         }
 
-        throw redirect(302, `/hospital/${employee.hospitalId}/dashboard`);
+        if (employee.role == "admin")
+            throw redirect(302, `/hospital/${body.data.hospitalId}/dashboard`)
+        else throw redirect(302, `/hospital/${body.data.hospitalId}/my-attendance`)
     }
 }

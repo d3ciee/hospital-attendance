@@ -1,6 +1,13 @@
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load = (async (e) => {
+    const employee = await e.locals.db.query.HospitalEmployee.findFirst({
+        where: ({ userId }, { eq }) => eq(userId, e.locals.user?.id ?? "")
+    })
+
+    if (!employee) throw error(400, "user_not_employee")
+
     const attendance = (await e.locals.db.query.Attendance.findMany({
         with: {
             employee: {
@@ -19,7 +26,7 @@ export const load = (async (e) => {
                 }
             }
         },
-        where: ({ hospitalId }, { eq }) => eq(hospitalId, e.params.hospital_id)
+        where: ({ hospitalId, employeeUId }, { eq, and }) => and(eq(employeeUId, employee?.uuid ?? ""), eq(hospitalId, e.params.hospital_id))
     })).map(a => {
 
         const [hours, minutes] = a.employee.department.checkInAt.split(":").map(Number);
@@ -35,7 +42,7 @@ export const load = (async (e) => {
             checkInAt: a.employee.department.checkInAt,
             checkOutAt: a.employee.department.checkOutAt,
             checkedInAt: a.checkInAt,
-            status: a.absentedAt ? "absented" : expected <= cameInAt ? "present" : "late"
+            status: expected <= cameInAt ? "present" : "late"
         })
     })
 

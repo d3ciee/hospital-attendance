@@ -27,7 +27,7 @@ export const load = (async (e) => {
     if (employee.hospitalId !== hospital.registrationId) return error(403, "You are not authorized to view this page.");
 
     const availableViews = dashboardViews.get(employee.role)!;
-    if (!availableViews.find(v => v.path === dashboardView)) return error(404, "You are not authorized to view this page.");
+    if (!availableViews.find(v => v.path === dashboardView) && dashboardView) return error(404, "You are not authorized to view this page.");
 
 
     return { employee, hospital, availableViews };

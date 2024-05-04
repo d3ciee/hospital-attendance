@@ -161,7 +161,7 @@
 						<Table.Head>Name</Table.Head>
 						<Table.Head>Email</Table.Head>
 						<Table.Head>Department</Table.Head>
-						<Table.Head>Status</Table.Head>
+						<!-- <Table.Head>Status</Table.Head> -->
 						<Table.Head>Actions</Table.Head>
 					</Table.Row>
 				</Table.Header>
@@ -172,7 +172,7 @@
 							<Table.Cell>{d.name}</Table.Cell>
 							<Table.Cell>{d.email}</Table.Cell>
 							<Table.Cell>{d.department}</Table.Cell>
-							<Table.Cell>
+							<!-- <Table.Cell>
 								<Badge
 									class={twMerge(
 										{
@@ -186,7 +186,7 @@
 								>
 									{d.status}
 								</Badge>
-							</Table.Cell>
+							</Table.Cell> -->
 
 							<Table.Cell class="flex gap-2">
 								<Dialog.Root>
@@ -234,7 +234,7 @@
 											<div class="flex w-full items-center justify-center pt-6">
 												<img
 													class="h-96 w-96 bg-secondary"
-													src="https://api.qrserver.com/v1/create-qr-code/?data={d.uuid}&amp;size=384x384"
+													src="https://api.qrserver.com/v1/create-qr-code/?data={d.uuid}&size=384x384"
 													alt=""
 												/>
 											</div>

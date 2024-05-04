@@ -7,13 +7,14 @@ const dashboardViews = new Map<THospitalEmployee["role"], { name: string, path: 
             { name: "Dashboard", path: "dashboard" },
             { name: "Departments", path: "departments" },
             { name: "Employees", path: "employees" },
-            { name: "Attendance", path: "attendance" }
+            { name: "Attendance", path: "attendance" },
+            { name: "Leave Requests", path: "leave-requests" }
         ]
     )
     .set("employee",
         [
-            { name: "Dashboard", path: "dashboard" },
-            { name: "Attendance", path: "employee-attendance" }
+            { name: "My attendance", path: "my-attendance" },
+            { name: "Request leave", path: "request-leave" }
         ]
     )
 

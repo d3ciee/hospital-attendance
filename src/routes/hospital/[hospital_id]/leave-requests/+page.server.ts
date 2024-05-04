@@ -8,6 +8,8 @@ import { eq } from "drizzle-orm";
 import HospitalEmployee from "$lib/models/hospital/hospital-employee";
 import bcrypt from "bcryptjs"
 import User from "$lib/models/user/user";
+import Attendance from "$lib/models/attendance/attendance";
+import LeaveRequests from "$lib/models/leave-requests/leave-requests";
 
 const validationSchema = z.object({
     id: z.string({ required_error: "An ID is required." }).min(3, { message: "ID must be at least 3 characters long." }).max(64, { message: "ID must be at most 64 characters long." }),
@@ -20,42 +22,64 @@ const validationSchema = z.object({
 })
 
 export const load = (async (e) => {
-    const departments = (await e.locals.db.query.HospitalDepartment.findMany({
-        columns: {
-            name: true,
-            uuid: true
-        },
-        where: ({ hospitalId, id }, { eq, and, ne }) => and(ne(id, "DP-ADMIN-1"), eq(hospitalId, e.params.hospital_id))
-    }))
+    const leaveRequests = await e.locals.db.query.LeaveRequests.findMany({
 
-    const employees = (await e.locals.db.query.HospitalEmployee.findMany({
-        columns: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            uuid: true
-        },
+        where: ({ hospitalId, status }, { eq, and }) => and(eq(hospitalId, e.params.hospital_id), eq(status, "pending")),
+
         with: {
-            department: {
-                columns: {
-                    name: true
-                }
-            }
-        },
-        where: ({ hospitalId, role }, { eq, and }) => and(eq(hospitalId, e.params.hospital_id), eq(role, "employee"))
-    }))
-        .map(e => ({
-            ...e,
-            name: `${e.firstName} ${e.lastName}`,
-            status: "present",
-            department: e.department.name
-        }))
+            employee: true
+        }
+    })
 
-    return { departments, employees };
+    console.log(leaveRequests)
+    return { leaveRequests };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
+    accept: async (e) => {
+        const formData = await e.request.formData();
+        console.log(formData.get("employeeUId"));
+
+        try {
+            await e.locals.db.insert(Attendance).values({
+                employeeUId: formData.get("employeeUId")?.toString() ?? "",
+                checkInAt: Date.now(),
+                absentedAt: Date.now(),
+                hospitalId: e.params.hospital_id,
+                uuid: uuid()
+            })
+            await e.locals.db.update(LeaveRequests).set({
+                status: "accepted"
+            })
+
+        }
+        catch (e) {
+            console.log(e);
+            return fail(500, {
+                errors: [{ message: "An error occured.  Try again later." }]
+            })
+        }
+        throw redirect(302, "?")
+
+    },
+    reject: async (e) => {
+        const formData = await e.request.formData();
+        console.log(formData.get("employeeUId"));
+
+        try {
+            await e.locals.db.update(LeaveRequests).set({
+                status: "rejected"
+            })
+        }
+        catch (e) {
+            console.log(e);
+            return fail(500, {
+                errors: [{ message: "An error occured.  Try again later." }]
+            })
+        }
+
+        throw redirect(302, "?");
+    },
     delete: async (e) => {
         const formData = await e.request.formData();
         const employeeUId = formData.get("departmentUId")?.toString();
@@ -77,6 +101,7 @@ export const actions: Actions = {
         }
         throw redirect(302, "?")
     },
+
     create: async (e) => {
         const body = validateForm(await e.request.formData(), validationSchema);
         if (!body.valid) {
