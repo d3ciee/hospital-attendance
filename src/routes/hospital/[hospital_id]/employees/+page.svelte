@@ -10,15 +10,27 @@
 
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import QRCode from 'qrcode';
 	import * as Select from '$lib/ui/select';
+	import { onMount } from 'svelte';
 
 	export let data: PageData;
+
+	$: canv = undefined as any;
+	let qrCode: QRCode;
 
 	let loading: boolean = false;
 	let error: string = '';
 
 	let isAddEmployeeModalOpen: boolean;
 	let isDeleteEmployeeModalOpen: boolean;
+
+	onMount(async () => {
+		qrCode = await QRCode.toCanvas(canv, 'sample');
+	});
+
+	$: qrUrl = '';
+
 	const onSubmit: SubmitFunction = async () => {
 		error = '';
 		loading = true;
@@ -222,9 +234,24 @@
 										</Dialog.Header>
 									</Dialog.Content>
 								</Dialog.Root>
+
 								<Dialog.Root>
 									<Dialog.Trigger let:builder>
-										<Button size="icon" {...builder} variant="outline">
+										<Button
+											on:click={() => {
+												QRCode.toDataURL(
+													d.uuid,
+													{ errorCorrectionLevel: 'H' },
+													function (err, url) {
+														if (err) return err;
+														qrUrl = url;
+													}
+												);
+											}}
+											size="icon"
+											{...builder}
+											variant="outline"
+										>
 											<QrCode class="h-4 w-4" />
 										</Button>
 									</Dialog.Trigger>
@@ -232,11 +259,7 @@
 										<Dialog.Header>
 											<Dialog.Title>Employee QR Code</Dialog.Title>
 											<div class="flex w-full items-center justify-center pt-6">
-												<img
-													class="h-96 w-96 bg-secondary"
-													src="https://api.qrserver.com/v1/create-qr-code/?data={d.uuid}&size=384x384"
-													alt=""
-												/>
+												<img src={qrUrl} class="h-96 w-96 bg-secondary" alt="" />
 											</div>
 										</Dialog.Header>
 									</Dialog.Content>
@@ -249,3 +272,5 @@
 		</Card.Content>
 	</Card.Root>
 </main>
+
+<!-- src="https://api.qrserver.com/v1/create-qr-code/?data={d.uuid}&size=384x384" -->
