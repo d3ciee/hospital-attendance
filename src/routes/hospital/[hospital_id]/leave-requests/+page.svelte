@@ -56,10 +56,10 @@
 				<Table.Caption>A list of the pending requests.</Table.Caption>
 				<Table.Header>
 					<Table.Row>
-						<Table.Head class="w-[100px]">ID</Table.Head>
-						<Table.Head>Name</Table.Head>
-						<Table.Head>Email</Table.Head>
-						<Table.Head>Department</Table.Head>
+						<Table.Head class="w-[100px]">Name</Table.Head>
+						<Table.Head>Type</Table.Head>
+						<Table.Head>Status</Table.Head>
+						<Table.Head>Details</Table.Head>
 						<!-- <Table.Head>Status</Table.Head> -->
 						<Table.Head>Actions</Table.Head>
 					</Table.Row>

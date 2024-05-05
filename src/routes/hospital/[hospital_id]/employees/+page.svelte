@@ -11,8 +11,6 @@
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import * as Select from '$lib/ui/select';
-	import { Badge } from '$lib/ui/badge';
-	import { twMerge } from 'tailwind-merge';
 
 	export let data: PageData;
 
@@ -25,11 +23,13 @@
 		error = '';
 		loading = true;
 		return async ({ result }) => {
+			console.log(result);
 			switch (result.type) {
 				case 'redirect':
-					await goto('?', {
-						invalidateAll: true
-					});
+					await location.reload();
+					// await goto('?', {
+					// 	invalidateAll: true
+					// });
 					isAddEmployeeModalOpen = false;
 					isDeleteEmployeeModalOpen = false;
 					break;
